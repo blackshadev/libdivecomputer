@@ -4,67 +4,67 @@ on: [push, pull_request]
 
 jobs:
 
-  linux:
+  # linux:
 
-    name: Linux
+  #   name: Linux
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler: [gcc, clang]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       compiler: [gcc, clang]
 
-    env:
-      CC: ${{ matrix.compiler }}
+  #   env:
+  #     CC: ${{ matrix.compiler }}
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: sudo apt-get install libbluetooth-dev libusb-1.0-0-dev
-      - run: autoreconf --install --force
-      - run: ./configure --prefix=/usr
-      - run: make
-      - run: make distcheck
-      - name: Package artifacts
-        run: |
-          make install DESTDIR=$PWD/artifacts
-          tar -czf ${{ github.job }}-${{ matrix.compiler }}.tar.gz -C artifacts usr
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.job }}-${{ matrix.compiler }}
-          path: ${{ github.job }}-${{ matrix.compiler }}.tar.gz
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install dependencies
+  #       run: sudo apt-get install libbluetooth-dev libusb-1.0-0-dev
+  #     - run: autoreconf --install --force
+  #     - run: ./configure --prefix=/usr
+  #     - run: make
+  #     - run: make distcheck
+  #     - name: Package artifacts
+  #       run: |
+  #         make install DESTDIR=$PWD/artifacts
+  #         tar -czf ${{ github.job }}-${{ matrix.compiler }}.tar.gz -C artifacts usr
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: ${{ github.job }}-${{ matrix.compiler }}
+  #         path: ${{ github.job }}-${{ matrix.compiler }}.tar.gz
 
-  mac:
+  # mac:
 
-    name: Mac
+  #   name: Mac
 
-    runs-on: macos-latest
+  #   runs-on: macos-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler: [gcc, clang]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       compiler: [gcc, clang]
 
-    env:
-      CC: ${{ matrix.compiler }}
+  #   env:
+  #     CC: ${{ matrix.compiler }}
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: brew install autoconf automake libtool hidapi libusb
-      - run: autoreconf --install --force
-      - run: ./configure --prefix=/usr
-      - run: make
-      - run: make distcheck
-      - name: Package artifacts
-        run: |
-          make install DESTDIR=$PWD/artifacts
-          tar -czf ${{ github.job }}-${{ matrix.compiler }}.tar.gz -C artifacts usr
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.job }}-${{ matrix.compiler }}
-          path: ${{ github.job }}-${{ matrix.compiler }}.tar.gz
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install dependencies
+  #       run: brew install autoconf automake libtool hidapi libusb
+  #     - run: autoreconf --install --force
+  #     - run: ./configure --prefix=/usr
+  #     - run: make
+  #     - run: make distcheck
+  #     - name: Package artifacts
+  #       run: |
+  #         make install DESTDIR=$PWD/artifacts
+  #         tar -czf ${{ github.job }}-${{ matrix.compiler }}.tar.gz -C artifacts usr
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: ${{ github.job }}-${{ matrix.compiler }}
+  #         path: ${{ github.job }}-${{ matrix.compiler }}.tar.gz
 
   windows:
 
@@ -89,23 +89,23 @@ jobs:
           tar xzf v${LIBUSB_VERSION}.tar.gz
           pushd libusb-${LIBUSB_VERSION}
           autoreconf --install --force
-          ./configure --host=${{ matrix.arch }}-w64-mingw32  --prefix=/usr
+          ./configure --host=${{ matrix.arch }}-w64-mingw32 --prefix=/usr
           make
           make install DESTDIR=$PWD/../artifacts
           popd
       - name: Install hidapi
         env:
           HIDAPI_VERSION: 0.10.1
-          PKG_CONFIG_LIBDIR: ${{ github.workspace }}/artifacts/usr/lib/pkgconfig
-          PKG_CONFIG_SYSROOT_DIR: ${{ github.workspace }}/artifacts
-          PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
-          PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
+          # PKG_CONFIG_LIBDIR: ${{ github.workspace }}/artifacts/usr/lib/pkgconfig
+          # PKG_CONFIG_SYSROOT_DIR: ${{ github.workspace }}/artifacts
+          # PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
+          # PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
         run: |
           wget -c https://github.com/libusb/hidapi/archive/refs/tags/hidapi-${HIDAPI_VERSION}.tar.gz
           tar xzf hidapi-${HIDAPI_VERSION}.tar.gz
           pushd hidapi-hidapi-${HIDAPI_VERSION}
           autoreconf --install --force
-          ./configure --host=${{ matrix.arch }}-w64-mingw32  --prefix=/usr
+          ./configure --host=${{ matrix.arch }}-w64-mingw32 --prefix=/usr
           make || true
           make install DESTDIR=$PWD/../artifacts
           popd
